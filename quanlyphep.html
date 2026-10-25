@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Phép Nghỉ - Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f0f4f8; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        header { background: linear-gradient(135deg, #1976d2, #1565c0); color: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; }
+        h1 { font-size: 24px; margin-bottom: 4px; }
+        .user-info { margin-top: 10px; font-size: 14px; opacity: 0.9; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; background: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; color: #555; transition: all 0.2s; }
+        .tab.active { background: #1976d2; color: white; }
+        .tab:hover { background: #e3f2fd; }
+        .tab.active:hover { background: #1565c0; }
+
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card h2 { font-size: 18px; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { padding: 16px; border-radius: 8px; text-align: center; }
+        .stat-card.blue { background: #e3f2fd; color: #1565c0; }
+        .stat-card.green { background: #e8f5e9; color: #2e7d32; }
+        .stat-card.orange { background: #fff3e0; color: #ef6c00; }
+        .stat-card.gray { background: #f5f5f5; color: #616161; }
+        .stat-value { font-size: 28px; font-weight: bold; margin-bottom: 4px; }
+        .stat-label { font-size: 13px; opacity: 0.8; }
+
+        form label { display: block; margin: 12px 0 6px; font-weight: 500; color: #444; font-size: 14px; }
+        form input, form select, form textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        form input:focus, form select:focus, form textarea:focus { outline: none; border-color: #1976d2; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        button.primary { background: #1976d2; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 15px; cursor: pointer; margin-top: 16px; }
+        button.primary:hover { background: #1565c0; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #f8f9fa; font-weight: 600; color: #444; }
+        tr:hover { background: #f9fafb; }
+
+        .status { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; display: inline-block; }
+        .status.pending { background: #fff8e1; color: #f57c00; }
+        .status.approved { background: #e8f5e9; color: #2e7d32; }
+        .status.rejected { background: #ffebee; color: #c62828; }
+
+        .btn-sm { padding: 5px 10px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 4px; }
+        .btn-sm.approve { background: #4caf50; color: white; }
+        .btn-sm.reject { background: #f44336; color: white; }
+
+        .hidden { display: none !important; }
+        small { color: #888; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🏖️ Quản Lý Phép Nghỉ</h1>
+    <div class="user-info">👤 Nguyễn Văn A | Bộ phận: Sản xuất | Vai trò: Nhân viên</div>
+</header>
+
+<!-- Tab điều hướng -->
+<div class="tabs">
+    <button class="tab active" onclick="switchTab('tongquan')">📊 Tổng quan</button>
+    <button class="tab" onclick="switchTab('dondang')">📝 Đơn xin phép</button>
+    <button class="tab" onclick="switchTab('lichsu')">📋 Lịch sử đơn</button>
+    <button class="tab" onclick="switchTab('duyet')">✅ Duyệt đơn</button>
+</div>
+
+<!-- ===== TAB: TỔNG QUAN ===== -->
+<div id="tongquan" class="tab-content">
+    <div class="card">
+        <h2>📈 Thông tin phép năm 2026</h2>
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Tổng ngày phép năm</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Đã sử dụng</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">7</div>
+                <div class="stat-label">Còn lại</div>
+            </div>
+            <div class="stat-card gray">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Đang chờ duyệt</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📅 Lịch nghỉ sắp tới của bộ phận</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Người nghỉ</th>
+                    <th>Loại phép</th>
+                    <th>Thời gian</th>
+                    <th>Số ngày</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Trần Thị B</td>
+                    <td>Phép năm</td>
+                    <td>28/10/2026 → 30/10/2026</td>
+                    <td>3 ngày</td>
+                    <td><span class="status approved">✅ Đã duyệt</span></td>
+                </tr>
+                <tr>
+                    <td>Lê Văn C</td>
+                    <td>Việc riêng</td>
+                    <td>26/10/2026</td>
+                    <td>0.5 ngày</td>
+                    <td><span class="status pending">⏳ Chờ duyệt</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ===== TAB: ĐƠN XIN PHÉP ===== -->
+<div id="dondang" class="tab-content hidden">
+    <div class="card">
+        <h2>📝 Tạo đơn xin phép mới</h2>
+        <form>
+            <label>Loại phép nghỉ</label>
+            <select>
+                <option>Phép năm</option>
+                <option>Phép việc riêng</option>
+                <option>Phép bệnh</option>
+                <option>Phép cưới/hôn nhân</option>
+                <option>Nghỉ không lương</option>
+            </select>
+
+            <div class="form-row">
+                <div>
+                    <label>Ngày bắt đầu</label>
+                    <input type="date" value="2026-11-01">
+                </div>
+                <div>
+                    <label>Ngày kết thúc</label>
+                    <input type="date" value="2026-11-03">
+                </div>
+            </div>
+
+            <label>Số ngày nghỉ thực tế</label>
+            <input type="text" value="3 ngày" readonly style="background: #f9fafb;">
+
+            <label>Lý do nghỉ</label>
+            <textarea rows="4" placeholder="Nhập lý do nghỉ phép...">Việc cá nhân, đã sắp xếp công việc với đồng nghiệp</textarea>
+
+            <label>Đính kèm tài liệu <small>(nếu có: giấy khám bệnh, giấy đăng ký kết hôn...)</small></label>
+            <input type="file">
+
+            <button type="button" class="primary">📤 Nộp đơn xin phép</button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== TAB: LỊCH SỬ ===== -->
+<div id="lichsu" class="tab-content hidden">
+    <div class="card">
+        <h2>📋 Lịch sử các đơn đã tạo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Loại phép</th>
+                    <th>Thời gian</th>
+                    <th>Ngày tạo</th>
+                    <th>Người duyệt</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LV261005</td>
+                    <td>Phép năm</td>
+                    <td>05/10 → 07/10</td>
+                    <td>02/10/2026</td>
+                    <td>Trưởng phòng Minh</td>
+                    <td><span class="status approved">✅ Đã duyệt</span></td>
+                </tr>
+                <tr>
+                    <td>LV260915</td>
+                    <td>Phép bệnh</td>
+                    <td>15/09/2026</td>
+                    <td>14/09/2026</td>
+                    <td>Trưởng phòng Minh</td>
+                    <td><span class="status approved">✅ Đã duyệt</span></td>
+                </tr>
+                <tr>
+                    <td>LV261026</td>
+                    <td>Phép việc riêng</td>
+                    <td>26/10/2026</td>
+                    <td>25/10/2026</td>
+                    <td>Trưởng phòng Minh</td>
+                    <td><span class="status pending">⏳ Chờ duyệt</span></td>
+                </tr>
+                <tr>
+                    <td>LV260810</td>
+                    <td>Nghỉ không lương</td>
+                    <td>10/08 → 11/08</td>
+                    <td>05/08/2026</td>
+                    <td>Trưởng phòng Minh</td>
+                    <td><span class="status rejected">❌ Từ chối</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ===== TAB: DUYỆT ĐƠN ===== -->
+<div id="duyet" class="tab-content hidden">
+    <div class="card">
+        <h2>✅ Các đơn cần duyệt <span style="color:#f57c00; font-size:14px; background:#fff8e1; padding:2px 8px; border-radius:12px;">2 đơn chờ</span></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Người nộp</th>
+                    <th>Bộ phận</th>
+                    <th>Loại phép</th>
+                    <th>Thời gian nghỉ</th>
+                    <th>Lý do</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lê Văn C</td>
+                    <td>Sản xuất</td>
+                    <td>Việc riêng</td>
+                    <td>26/10/2026<br>0.5 ngày</td>
+                    <td>Đi làm thủ tục nhà cửa</td>
+                    <td>
+                        <button class="btn-sm approve">✅ Duyệt</button>
+                        <button class="btn-sm reject">❌ Từ chối</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Phạm Thị D</td>
+                    <td>Kho vật tư</td>
+                    <td>Phép năm</td>
+                    <td>02/11 → 06/11<br>5 ngày</td>
+                    <td>Đi du lịch gia đình</td>
+                    <td>
+                        <button class="btn-sm approve">✅ Duyệt</button>
+                        <button class="btn-sm reject">❌ Từ chối</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>📊 Đơn đã duyệt trong tháng</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Người nộp</th>
+                    <th>Loại phép</th>
+                    <th>Thời gian</th>
+                    <th>Ngày duyệt</th>
+                    <th>Kết quả</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nguyễn Văn A</td>
+                    <td>Phép năm</td>
+                    <td>05/10 → 07/10</td>
+                    <td>03/10/2026</td>
+                    <td><span class="status approved">✅ Đã duyệt</span></td>
+                </tr>
+                <tr>
+                    <td>Trần Thị B</td>
+                    <td>Phép bệnh</td>
+                    <td>20/10/2026</td>
+                    <td>19/10/2026</td>
+                    <td><span class="status approved">✅ Đã duyệt</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+    // Ẩn tất cả tab
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    // Bỏ active tất cả nút
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    // Hiển thị tab được chọn
+    document.getElementById(tabId).classList.remove('hidden');
+    // Đánh dấu nút active
+    event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
